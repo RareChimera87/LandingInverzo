@@ -84,7 +84,8 @@
 									<input class="input" type="email" name="email" placeholder="Tu correo&hellip;">
 								</div>
 								<div class="control">
-									<a class="button button-primary button-block" href="#">Quiero acceso prioritario</a>
+									<button id="subscribe-btn" class="button button-primary button-block">Suscribirme</button>
+
 								</div>
 							</div>
 						</div>
@@ -516,5 +517,29 @@
     </div>
 
     <script src="dist/js/main.min.js"></script>
+	<script>
+document.getElementById("subscribe-btn").addEventListener("click", async () => {
+    const email = document.querySelector('input[name="email"]').value;
+    if (!email) return alert("Ingresa un correo válido.");
+
+    try {
+        const res = await fetch('http://localhost:3000/subscribe', {
+            method: 'POST',
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ email })
+        });
+
+        const data = await res.json();
+        if (data.success) {
+            alert("¡Correo registrado con éxito!");
+        } else {
+            alert("Este correo ya está registrado.");
+        }
+    } catch (err) {
+        alert("Error al registrar el correo.");
+    }
+});
+</script>
+
 </body>
 </html>
