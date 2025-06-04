@@ -520,23 +520,33 @@
 	<script>
 document.getElementById("subscribe-btn").addEventListener("click", async () => {
     const email = document.querySelector('input[name="email"]').value;
-    if (!email) return alert("Ingresa un correo válido.");
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!email || !emailRegex.test(email)) return alert("Ingresa un correo válido.");
 
     try {
-        const res = await fetch('http://localhost:3000/subscribe', {
+        const res = await fetch('http://localhost:3000/api/email', {
             method: 'POST',
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ email })
         });
 
-        const data = await res.json();
-        if (data.success) {
+        const text = await res.text(); // Obtener la respuesta como texto
+        let data;
+        try {
+            data = JSON.parse(text); // Intentar parsear como JSON
+        } catch (e) {
+            console.error('Respuesta no es JSON:', text);
+            return alert(`Error al registrar el correo: Respuesta inválida del servidor.`);
+        }
+
+        if (res.status === 200) {
             alert("¡Correo registrado con éxito!");
         } else {
-            alert("Este correo ya está registrado.");
+            alert(data.message || "Error al registrar el correo.");
         }
     } catch (err) {
-        alert("Error al registrar el correo.");
+        console.error('Error en fetch:', err);
+        alert("Error al registrar el correo: " + err.message);
     }
 });
 </script>
